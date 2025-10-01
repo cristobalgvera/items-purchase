@@ -9,11 +9,18 @@ function createPurchaseOrder(): void {
   });
 }
 
+function confirmPurchaseOrder(): void {
+  withExceptionHandler(() => {
+    throw new Error("Función deshabilitada temporalmente");
+  });
+}
+
 // @ts-expect-error
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
 
   ui.createMenu("Pedidos")
     .addItem("Realizar pedido", createPurchaseOrder.name)
+    .addItem("Confirmar pedido", confirmPurchaseOrder.name)
     .addToUi();
 }
