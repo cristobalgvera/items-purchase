@@ -1,5 +1,5 @@
 import { DomainException } from "@core/exceptions/domain.exception";
-import type { ValidateUserLocationService } from "../application/ports/validate-user-location.service";
+import type { ValidateUserLocationService } from "../ports/validate-user-location.service";
 
 export class ValidateUserLocationSpreadsheetService
   implements ValidateUserLocationService

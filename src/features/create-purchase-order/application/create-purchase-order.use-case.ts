@@ -1,12 +1,12 @@
 import type { NotifierService } from "@core/notifier/notifier.service";
+import type { ValidateUserLocationService } from "@features/shared/ports/validate-user-location.service";
 import type { CreatePurchaseOrderService } from "./ports/create-purchase-order.service";
 import type { GetOmittedItemsService } from "./ports/get-omitted-items.service";
 import type { GetProviderNameService } from "./ports/get-provider-name.service";
-import type { ValidateUserLocationService } from "./ports/validate-user-location.service";
 
 export class CreatePurchaseOrderUseCase {
   readonly #notifierService: NotifierService;
-  readonly #validationUserLocationService: ValidateUserLocationService;
+  readonly #validateUserLocationService: ValidateUserLocationService;
   readonly #getOmittedItemsService: GetOmittedItemsService;
   readonly #getProviderNameService: GetProviderNameService;
   readonly #createPurchaseOrderService: CreatePurchaseOrderService;
@@ -14,20 +14,20 @@ export class CreatePurchaseOrderUseCase {
   // biome-ignore lint/nursery/useMaxParams: Dependency injection
   constructor(
     notifierService: NotifierService,
-    preconditionsValidatorService: ValidateUserLocationService,
+    validateUserLocationService: ValidateUserLocationService,
     getOmittedItemsService: GetOmittedItemsService,
     getProviderNameService: GetProviderNameService,
     createPurchaseOrderService: CreatePurchaseOrderService
   ) {
     this.#notifierService = notifierService;
-    this.#validationUserLocationService = preconditionsValidatorService;
+    this.#validateUserLocationService = validateUserLocationService;
     this.#getOmittedItemsService = getOmittedItemsService;
     this.#getProviderNameService = getProviderNameService;
     this.#createPurchaseOrderService = createPurchaseOrderService;
   }
 
   execute(): void {
-    this.#validationUserLocationService.validateUserLocation();
+    this.#validateUserLocationService.validateUserLocation();
 
     const { providerName } = this.#getProviderNameService.getProviderName();
     const { items: omittedItems } =
