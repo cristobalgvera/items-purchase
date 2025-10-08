@@ -1,4 +1,6 @@
+import { SHEET_ID } from "@core/constants/sheet-id.constant";
 import { notifierService } from "@core/notifier";
+import { getSheetById } from "@core/utils/get-sheet-by-id.util";
 import { addItemToBePurchasedUseCase } from "@features/add-item-to-be-purchased";
 import { ConfirmPurchaseOrderUseCase } from "./application/confirm-purchase-order.use-case";
 import type { AdjustQuantityDifferenceService } from "./application/ports/adjust-quantity-difference.service";
@@ -8,25 +10,9 @@ import { AdjustQuantityDifferenceSheetService } from "./infrastructure/adjust-qu
 import { ConfirmPurchaseOrderSheetService } from "./infrastructure/confirm-purchase-order-sheet.service";
 import { GetPendingPurchaseItemsSheetService } from "./infrastructure/get-pending-purchase-items-sheet.service";
 
-const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-const purchasedOrdersSheet = spreadsheet.getSheetByName("Pedidos realizados");
-
-if (!purchasedOrdersSheet) {
-  throw new Error("No se ha encontrado la hoja de pedidos realizados");
-}
-
-const historicalPurchaseOrdersSheet =
-  spreadsheet.getSheetByName("Pedidos históricos");
-
-if (!historicalPurchaseOrdersSheet) {
-  throw new Error("No se ha encontrado la hoja de pedidos históricos");
-}
-
-const itemsSheet = spreadsheet.getSheetByName("Productos");
-
-if (!itemsSheet) {
-  throw new Error("No se ha encontrado la hoja de productos");
-}
+const purchasedOrdersSheet = getSheetById(SHEET_ID.PURCHASED_ORDERS);
+const historicalPurchaseOrdersSheet = getSheetById(SHEET_ID.HISTORICAL_ORDERS);
+const itemsSheet = getSheetById(SHEET_ID.ITEMS);
 
 const getPendingPurchaseItemsService: GetPendingPurchaseItemsService =
   new GetPendingPurchaseItemsSheetService(purchasedOrdersSheet);

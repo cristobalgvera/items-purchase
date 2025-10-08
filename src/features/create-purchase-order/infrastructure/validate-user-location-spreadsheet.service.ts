@@ -4,30 +4,24 @@ import type { ValidateUserLocationService } from "../application/ports/validate-
 export class ValidateUserLocationSpreadsheetService
   implements ValidateUserLocationService
 {
-  static readonly #ORDER_TO_BE_DONE_SHEET_NAME = "Pedido por realizar";
+  readonly #requiredLocationSheet: GoogleAppsScript.Spreadsheet.Sheet;
+  readonly #activeSheet: GoogleAppsScript.Spreadsheet.Sheet;
 
-  readonly #spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
-
-  constructor(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-    this.#spreadsheet = spreadsheet;
+  constructor(
+    requiredLocationSheet: GoogleAppsScript.Spreadsheet.Sheet,
+    activeSheet: GoogleAppsScript.Spreadsheet.Sheet
+  ) {
+    this.#requiredLocationSheet = requiredLocationSheet;
+    this.#activeSheet = activeSheet;
   }
 
   validateUserLocation(): void {
-    const orderToBeDoneSheet = this.#spreadsheet.getSheetByName(
-      ValidateUserLocationSpreadsheetService.#ORDER_TO_BE_DONE_SHEET_NAME
-    );
-
-    if (!orderToBeDoneSheet) {
+    if (
+      this.#activeSheet.getSheetId() !==
+      this.#requiredLocationSheet.getSheetId()
+    ) {
       throw new DomainException({
-        message: `No se ha encontrado la hoja '${ValidateUserLocationSpreadsheetService.#ORDER_TO_BE_DONE_SHEET_NAME}'`,
-      });
-    }
-
-    const activeSheet = this.#spreadsheet.getActiveSheet();
-
-    if (activeSheet.getSheetId() !== orderToBeDoneSheet.getSheetId()) {
-      throw new DomainException({
-        message: `Debes estar en la hoja '${ValidateUserLocationSpreadsheetService.#ORDER_TO_BE_DONE_SHEET_NAME}' para ejecutar esta acción`,
+        message: `Debes estar en la hoja '${this.#requiredLocationSheet.getSheetName()}' para ejecutar esta acción`,
       });
     }
   }

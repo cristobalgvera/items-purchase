@@ -7,36 +7,30 @@ import type {
 export class CreatePurchaseOrderSheetService
   implements CreatePurchaseOrderService
 {
-  static readonly #ORDER_TO_BE_DONE_SHEET_NAME = "Pedido por realizar";
-  static readonly #PURCHASE_ORDERS_BY_PROVIDER_SHEET_NAME =
-    "Pedidos por proveedor";
   static readonly #PURCHASE_ORDERS_BY_PROVIDER_DATA_RANGE = "A3:E";
-  static readonly #HISTORICAL_PURCHASE_ORDERS_SHEET_NAME = "Pedidos históricos";
 
   static readonly #PROVIDER_NAME_CELL_POSITION = 0;
   static readonly #ITEM_NAME_CELL_POSITION = 1;
   static readonly #PURCHASE_ORDER_DATE_CELL_POSITION = 5;
   static readonly #PURCHAR_ORDER_CORRECTION_CELL_POSITION = 6;
 
-  readonly #spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
+  readonly #purchaseOrdersByProviderSheet: GoogleAppsScript.Spreadsheet.Sheet;
+  readonly #historicalOrdersSheet: GoogleAppsScript.Spreadsheet.Sheet;
+  readonly #ordersToBeDoneSheet: GoogleAppsScript.Spreadsheet.Sheet;
 
-  constructor(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
-    this.#spreadsheet = spreadsheet;
+  constructor(
+    purchaseOrdersByProviderSheet: GoogleAppsScript.Spreadsheet.Sheet,
+    historicalOrdersSheet: GoogleAppsScript.Spreadsheet.Sheet,
+    ordersToBeDoneSheet: GoogleAppsScript.Spreadsheet.Sheet
+  ) {
+    this.#purchaseOrdersByProviderSheet = purchaseOrdersByProviderSheet;
+    this.#historicalOrdersSheet = historicalOrdersSheet;
+    this.#ordersToBeDoneSheet = ordersToBeDoneSheet;
   }
 
   createPurchaseOrder(input: CreatePurchaseOrderInputDto): void {
-    const purchaseOrdersByProviderSheet = this.#spreadsheet.getSheetByName(
-      CreatePurchaseOrderSheetService.#PURCHASE_ORDERS_BY_PROVIDER_SHEET_NAME
-    );
-
-    if (!purchaseOrdersByProviderSheet) {
-      throw new DomainException({
-        message: `No se ha encontrado la hoja '${CreatePurchaseOrderSheetService.#PURCHASE_ORDERS_BY_PROVIDER_SHEET_NAME}'`,
-      });
-    }
-
     const purchaseOrdersByProviderRange =
-      purchaseOrdersByProviderSheet.getRange(
+      this.#purchaseOrdersByProviderSheet.getRange(
         CreatePurchaseOrderSheetService.#PURCHASE_ORDERS_BY_PROVIDER_DATA_RANGE
       );
 
@@ -56,23 +50,13 @@ export class CreatePurchaseOrderSheetService
   }
 
   #clearPurchaseOrdersToBeDoneSheet() {
-    const ordersToBeDoneSheet = this.#spreadsheet.getSheetByName(
-      CreatePurchaseOrderSheetService.#ORDER_TO_BE_DONE_SHEET_NAME
-    );
-
-    if (!ordersToBeDoneSheet) {
-      throw new DomainException({
-        message: `No se ha encontrado la hoja '${CreatePurchaseOrderSheetService.#ORDER_TO_BE_DONE_SHEET_NAME}'`,
-      });
-    }
-
     const cellsToBeCleared = [
       { desc: "Omitted items", range: "D2:D" },
       { desc: "Selected provider", range: "B1" },
     ];
 
     for (const { range } of cellsToBeCleared) {
-      ordersToBeDoneSheet.getRange(range).clearContent();
+      this.#ordersToBeDoneSheet.getRange(range).clearContent();
     }
   }
 
@@ -97,10 +81,7 @@ export class CreatePurchaseOrderSheetService
     const rowNumberWhereDataStarts = 3;
     const columnNumberWhereDataStarts = 1;
 
-    const purchaseOrdersByProviderSheet =
-      purchaseOrdersByProviderRange.getSheet();
-
-    purchaseOrdersByProviderSheet
+    this.#purchaseOrdersByProviderSheet
       .getRange(
         rowNumberWhereDataStarts,
         columnNumberWhereDataStarts,
@@ -109,11 +90,11 @@ export class CreatePurchaseOrderSheetService
       )
       .setValues(ordersByProvidersWithoutUpdatedOrders);
 
-    removeExtraRows(purchaseOrdersByProviderSheet);
-    clearArrayFormulaRelatedColumns(purchaseOrdersByProviderSheet);
+    removeExtraRows(this.#purchaseOrdersByProviderSheet);
+    clearArrayFormulaRelatedColumns(this.#purchaseOrdersByProviderSheet);
 
     function clearArrayFormulaRelatedColumns(
-      ordersByProviderSheet: GoogleAppsScript.Spreadsheet.Sheet
+      sheet: GoogleAppsScript.Spreadsheet.Sheet
     ) {
       const columnsHandledByArrayFormula = [
         { desc: "Provider", range: "A3:A" },
@@ -122,7 +103,7 @@ export class CreatePurchaseOrderSheetService
       ];
 
       for (const { range } of columnsHandledByArrayFormula) {
-        ordersByProviderSheet.getRange(range).clearContent();
+        sheet.getRange(range).clearContent();
       }
     }
 
@@ -174,19 +155,9 @@ export class CreatePurchaseOrderSheetService
       });
     }
 
-    const historicalOrdersSheet = this.#spreadsheet.getSheetByName(
-      CreatePurchaseOrderSheetService.#HISTORICAL_PURCHASE_ORDERS_SHEET_NAME
-    );
-
-    if (!historicalOrdersSheet) {
-      throw new DomainException({
-        message: `No se ha encontrado la hoja '${CreatePurchaseOrderSheetService.#HISTORICAL_PURCHASE_ORDERS_SHEET_NAME}'`,
-      });
-    }
-
-    historicalOrdersSheet
+    this.#historicalOrdersSheet
       .getRange(
-        historicalOrdersSheet.getLastRow() + 1,
+        this.#historicalOrdersSheet.getLastRow() + 1,
         1,
         updatedPurchaseOrders.length,
         updatedPurchaseOrders[0].length

@@ -1,3 +1,5 @@
+import { SHEET_ID } from "@core/constants/sheet-id.constant";
+import { getSheetById } from "@core/utils/get-sheet-by-id.util";
 import { AddItemToBePurchasedUseCase } from "./application/add-item-to-be-purchased.use-case";
 import type { CreateItemService } from "./application/ports/create-item.service";
 import type { UpdateItemService } from "./application/ports/update-item.service";
@@ -6,14 +8,9 @@ import { CreateItemSheetService } from "./infrastructure/create-item-sheet.servi
 import { UpdateItemSheetService } from "./infrastructure/update-item-sheet.service";
 import { ValidateItemExistsSheetService } from "./infrastructure/validate-item-exists-sheet.service";
 
-const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-const purchaseOrdersByProviderSheet = activeSpreadsheet.getSheetByName(
-  "Pedidos por proveedor"
+const purchaseOrdersByProviderSheet = getSheetById(
+  SHEET_ID.PURCHASE_ORDERS_BY_PROVIDER
 );
-
-if (!purchaseOrdersByProviderSheet) {
-  throw new Error("Sheet 'Pedidos por proveedor' not found");
-}
 
 const validateItemExistsService: ValidateItemExistsService =
   new ValidateItemExistsSheetService(purchaseOrdersByProviderSheet);
