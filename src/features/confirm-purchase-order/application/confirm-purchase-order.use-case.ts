@@ -41,7 +41,7 @@ export class ConfirmPurchaseOrderUseCase {
       this.#getPendingPurchaseItemsService.getPendingPurchaseItems();
 
     const itemsThatNeedsToBeOrderedAgain = pendingPurchaseItems.filter(
-      ({ quantityDifference }) => quantityDifference < 0
+      (item) => item.quantityDifference < 0
     );
 
     const isConfirmed = this.#showConfirmationDialog(
@@ -68,7 +68,7 @@ export class ConfirmPurchaseOrderUseCase {
       this.#adjustQuantityDifferenceService.adjustQuantityDifference({
         itemsToAdjust: itemsThatNeedsToBeOrderedAgain.map((item) => ({
           itemName: item.itemName,
-          quantityDifference: Math.abs(item.quantityDifference),
+          missingQuantity: Math.abs(item.quantityDifference),
         })),
       });
 
@@ -76,7 +76,7 @@ export class ConfirmPurchaseOrderUseCase {
       this.#addItemToBePurchasedUseCase.execute(
         createAddItemToBePurchased({
           itemName: item.itemName,
-          quantity: item.quantityDifference,
+          quantity: item.missingQuantity,
         })
       );
     }

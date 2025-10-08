@@ -1,20 +1,20 @@
 import type { GetPendingPurchaseItemsOutputDto } from "./get-pending-purchase-items.service";
 
-type PendingPurchaseItem =
-  GetPendingPurchaseItemsOutputDto["pendingPurchaseItems"][number];
+type ItemToAdjustDto = Readonly<
+  Pick<
+    GetPendingPurchaseItemsOutputDto["pendingPurchaseItems"][number],
+    "itemName"
+  > & {
+    missingQuantity: number;
+  }
+>;
 
 export type AdjustQuantityDifferenceInputDto = Readonly<{
-  itemsToAdjust: readonly Pick<
-    PendingPurchaseItem,
-    "itemName" | "quantityDifference"
-  >[];
+  itemsToAdjust: readonly ItemToAdjustDto[];
 }>;
 
 export type AdjustQuantityDifferenceOutputDto = Readonly<{
-  adjustedItems: readonly Pick<
-    PendingPurchaseItem,
-    "itemName" | "quantityDifference"
-  >[];
+  adjustedItems: readonly ItemToAdjustDto[];
 }>;
 
 export type AdjustQuantityDifferenceService = Readonly<{

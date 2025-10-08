@@ -38,23 +38,21 @@ export class AdjustQuantityDifferenceSheetService
 
     return {
       adjustedItems: input.itemsToAdjust
-        .map((itemToAdjust) => {
+        .map((itemToAdjust): typeof itemToAdjust => {
           const displayQuantity = items.get(itemToAdjust.itemName);
 
           if (displayQuantity === undefined) {
             throw new Error(`Item not found: ${itemToAdjust.itemName}`);
           }
 
-          const adjustedDifference =
-            (itemToAdjust.quantityDifference % displayQuantity) +
-            (itemToAdjust.quantityDifference < displayQuantity / 2 ? 0 : 1);
-
           return {
             itemName: itemToAdjust.itemName,
-            quantityDifference: adjustedDifference,
+            missingQuantity: Math.round(
+              itemToAdjust.missingQuantity / displayQuantity
+            ),
           };
         })
-        .filter((item) => item.quantityDifference > 0),
+        .filter((item) => item.missingQuantity > 0),
     };
   }
 }
