@@ -10,7 +10,7 @@ module.exports = {
   testRegex: ".*\\.spec\\.ts$",
   transform: { "^.+\\.ts$": "ts-jest" },
   collectCoverageFrom: [`**/*.(${COVERAGE_FILE_SUFFIX.join("|")}).ts`],
-  setupFilesAfterEnv: ["./test/env.setup.js"],
+  setupFilesAfterEnv: ["./test/env.setup.js", "jest-extended/all"],
   coverageDirectory: "./coverage",
   testEnvironment: "node",
   // Helps to use aliases in tsconfig (@module/*)
