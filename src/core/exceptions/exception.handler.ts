@@ -12,6 +12,7 @@ class ExceptionHandler {
   handle(exception: unknown): void {
     if (exception instanceof DomainException) {
       this.#notifierService.notify({ message: exception.message });
+      return;
     }
 
     throw exception;
