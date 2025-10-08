@@ -74,7 +74,7 @@ export class GetPendingPurchaseItemsSheetService
 
     if (pendingPurchaseItems.length === 0) {
       throw new DomainException({
-        message: "No hay items pendientes de compra",
+        message: "No hay productos pendientes de recepcionar",
       });
     }
 

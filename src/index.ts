@@ -22,6 +22,6 @@ function onOpen() {
 
   ui.createMenu("Pedidos")
     .addItem("Realizar pedido", createPurchaseOrder.name)
-    .addItem("Confirmar pedido", confirmPurchaseOrder.name)
+    .addItem("Confirmar recepción de productos", confirmPurchaseOrder.name)
     .addToUi();
 }
