@@ -7,7 +7,7 @@ import { generateItemId } from "./generate-item-id.util";
 export class ConfirmPurchaseOrderSheetService
   implements ConfirmPurchaseOrderService
 {
-  static readonly #DATA_RANGE = "A2:I";
+  static readonly #DATA_RANGE = "A2:H";
   static readonly #PROVIDER_NAME_COLUMN_INDEX = 0;
   static readonly #ITEM_NAME_COLUMN_INDEX = 1;
   static readonly #PURCHASE_ORDER_DATE_COLUMN_INDEX = 5;
